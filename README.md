@@ -4,7 +4,7 @@ A full-stack healthcare onboarding system integrating an Android client with a S
 The platform guides patients through structured medication protocols while supporting interactive chat assistance and escalation detection for safety-critical scenarios.
 
 This project demonstrates full-stack system design, combining mobile application architecture, backend API design, database modeling, and domain-driven backend structure.
-![App Demo](docs/screenshotss/onboarding_backend.gif)
+![App Demo](docs/screenshots/onboarding_backend.gif)
 ## System Architecture
 The system consists of two primary components:
 
