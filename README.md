@@ -59,6 +59,111 @@ The system consists of two primary components:
                        └────────────────┘
 
 ```
+## Authentication & Security
+
+This project now includes a production-oriented JWT authentication system across backend and Android client.
+
+### Security Goals
+
+- Stateless authentication for scalable APIs
+- Short-lived access tokens + long-lived refresh tokens
+- Server-side refresh token control (rotation + revocation)
+- Safe client logout and automatic local sign-out on auth failure
+- Role-aware authorization and ownership checks
+
+### Backend Implementation (Spring Boot)
+
+#### Core stack
+- Spring Security (`SecurityFilterChain`, stateless)
+- JWT (signed tokens with claims)
+- BCrypt password hashing
+- Flyway-managed auth schema
+
+#### Auth endpoints
+- `POST /api/v1/auth/register`
+- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/refresh`
+- `POST /api/v1/auth/logout`
+
+#### JWT model
+- **Access token**: short-lived, used for API authorization
+- **Refresh token**: long-lived, used only for token renewal
+- Claims include:
+    - `userId`
+    - `roles`
+    - `type` (`access` / `refresh`)
+
+#### Refresh token security
+- Refresh tokens are stored as **SHA-256 hashes** (not plaintext)
+- **Rotation on refresh**:
+    - old refresh token is revoked
+    - a new refresh token is issued
+- Reuse detection logic is included to reduce replay risk
+- Logout revokes the submitted refresh token server-side
+
+#### Authorization rules
+- Protected API domains require authenticated JWT
+- Role-based guard supports `USER` / `ADMIN`
+- Ownership checks enforce:
+    - `USER`: access own session data
+    - `ADMIN`: access all sessions
+
+#### Security handling
+- `401 Unauthorized` for unauthenticated requests
+- `403 Forbidden` for authenticated but unauthorized requests
+- Error responses avoid leaking sensitive internals
+- CORS configured for mobile API consumption
+
+#### Rate limiting
+- Login/register are protected by request throttling to reduce brute-force attacks
+- Current implementation is in-app (good baseline)
+- Recommended production upgrade: move rate limiting to Redis or API gateway
+
+### Android Implementation (Compose + MVVM)
+
+#### Token management
+- Tokens stored via DataStore-backed `TokenManager`
+- Supported operations:
+    - `getAccessToken()`
+    - `getRefreshToken()`
+    - `saveTokens()`
+    - `clearTokens()`
+
+#### Networking security
+- OkHttp interceptor attaches `Authorization: Bearer <accessToken>`
+- Authenticator handles `401` by calling refresh API and retrying original request
+- Infinite retry loops are prevented with retry guards
+- If refresh fails, local tokens are cleared to force safe sign-out
+
+#### Auth flow
+- On app launch:
+    - token exists -> enter authenticated flow (scanner)
+    - no token -> navigate to login
+- Logout flow:
+    - calls backend `/auth/logout` with refresh token (if present)
+    - always clears local tokens
+    - navigates to login and clears authenticated back stack
+
+### Why this design is safer
+
+- **JWT + stateless API** improves horizontal scalability
+- **Hashed refresh token storage** limits impact of DB leaks
+- **Refresh rotation** reduces replay window for stolen tokens
+- **Server-side logout revocation** prevents refresh reuse after sign-out
+- **Token-clearing fallback on client** avoids half-signed-in inconsistent state
+
+### Configuration
+
+Set JWT secret from environment variable (required):
+
+### PowerShell
+$env:JWT_SECRET="your-strong-secret-at-least-32-bytes"
+```bash
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+ ```
 
 ## Backend Architecture
 
