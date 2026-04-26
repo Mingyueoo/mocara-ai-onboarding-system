@@ -366,7 +366,6 @@ Request
 ## Future Improvements
 Potential extensions include:
 - AI-powered medical chat assistant
-- Authentication with Spring Security + JWT
 - Docker deployment
 - API documentation with OpenAPI / Swagger
 - Event-driven architecture for escalation alerts
