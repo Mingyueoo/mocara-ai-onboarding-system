@@ -1,6 +1,8 @@
 package com.mocara.backend.chat.service;
 
 import com.mocara.backend.api.v1.dto.ChatMessageDto;
+import com.mocara.backend.auth.entity.AuthRole;
+import com.mocara.backend.auth.security.AuthenticatedUser;
 import com.mocara.backend.chat.entity.ChatMessageEntity;
 import com.mocara.backend.chat.mapper.ChatMapper;
 import com.mocara.backend.chat.repo.ChatMessageRepository;
@@ -32,9 +34,10 @@ public class ChatService {
     }
 
     @Transactional
-    public ChatMessageDto sendMessage(UUID sessionId, String input, List<ChatMessageDto> context) {
+    public ChatMessageDto sendMessage(UUID sessionId, String input, List<ChatMessageDto> context, AuthenticatedUser currentUser) {
         var session = patientSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Session not found: " + sessionId));
+        validateOwnership(session, currentUser);
 
         // persist user message (optional for client, helpful for audit)
         ChatMessageEntity user = new ChatMessageEntity();
@@ -54,6 +57,15 @@ public class ChatService {
         chatMessageRepository.save(assistant);
 
         return reply;
+    }
+
+    private void validateOwnership(com.mocara.backend.session.entity.PatientSessionEntity session, AuthenticatedUser user) {
+        if (user.roles().contains(AuthRole.ADMIN)) {
+            return;
+        }
+        if (session.getUser() == null || !session.getUser().getId().equals(user.userId())) {
+            throw new IllegalArgumentException("You cannot access another user's session");
+        }
     }
 }
 

@@ -3,6 +3,7 @@ package com.mocara.backend.api.v1.controller;
 import com.mocara.backend.api.v1.dto.CreateSessionRequestDto;
 import com.mocara.backend.api.v1.dto.PatientSessionDto;
 import com.mocara.backend.api.v1.dto.UpdateStepRequestDto;
+import com.mocara.backend.auth.security.CurrentUserProvider;
 import com.mocara.backend.session.service.SessionService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,14 +20,16 @@ import java.util.UUID;
 public class SessionController {
 
     private final SessionService sessionService;
+    private final CurrentUserProvider currentUserProvider;
 
-    public SessionController(SessionService sessionService) {
+    public SessionController(SessionService sessionService, CurrentUserProvider currentUserProvider) {
         this.sessionService = sessionService;
+        this.currentUserProvider = currentUserProvider;
     }
 
     @PostMapping
     public PatientSessionDto createSession(@Valid @RequestBody CreateSessionRequestDto request) {
-        return sessionService.createSession(request.drugId(), request.protocolId());
+        return sessionService.createSession(request.drugId(), request.protocolId(), currentUserProvider.currentUser());
     }
 
     @PutMapping("/{sessionId}/steps/{stepNumber}")
@@ -35,7 +38,7 @@ public class SessionController {
             @PathVariable int stepNumber,
             @Valid @RequestBody UpdateStepRequestDto request
     ) {
-        return sessionService.updateSession(sessionId, stepNumber, request.response());
+        return sessionService.updateSession(sessionId, stepNumber, request.response(), currentUserProvider.currentUser());
     }
 }
 

@@ -19,3 +19,11 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+
+app:
+  security:
+    jwt:
+      issuer: mocara-backend
+      secret: ${JWT_SECRET}
+      access-token-expiration-seconds: 900
+      refresh-token-expiration-seconds: 1209600

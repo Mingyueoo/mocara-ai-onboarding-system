@@ -37,10 +37,15 @@ import java.util.concurrent.Executors
 @Composable
 fun ScannerScreen(
     viewModel: ScannerViewModel,
+    isLoggingOut: Boolean,
+    logoutError: String?,
+    onLogout: () -> Unit,
+    onDismissLogoutError: () -> Unit,
     onScanSuccess: (String) -> Unit
 ) {
     val scannerState by viewModel.scannerState.collectAsState()
     val context = LocalContext.current
+    var showLogoutConfirm by remember { mutableStateOf(false) }
 
     // Handle successful scan
     LaunchedEffect(scannerState) {
@@ -54,6 +59,21 @@ fun ScannerScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Scan Medication") },
+                actions = {
+                    IconButton(
+                        onClick = { showLogoutConfirm = true },
+                        enabled = !isLoggingOut
+                    ) {
+                        if (isLoggingOut) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(Icons.Default.Logout, contentDescription = "Logout")
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -110,6 +130,46 @@ fun ScannerScreen(
                 )
             }
         }
+    }
+
+    if (showLogoutConfirm) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirm = false },
+            title = { Text("Log out?") },
+            text = { Text("You will need to sign in again to continue.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLogoutConfirm = false
+                        onLogout()
+                    },
+                    enabled = !isLoggingOut
+                ) {
+                    Text("Log out")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showLogoutConfirm = false },
+                    enabled = !isLoggingOut
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (!logoutError.isNullOrBlank()) {
+        AlertDialog(
+            onDismissRequest = onDismissLogoutError,
+            title = { Text("Logout failed") },
+            text = { Text(logoutError) },
+            confirmButton = {
+                TextButton(onClick = onDismissLogoutError) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 

@@ -35,6 +35,9 @@ public class ProtocolSeeder implements CommandLineRunner {
     }
 
     private void seedOzempic() {
+        if (protocolRepository.existsById("ozempic_onboarding_v1")) {
+            return;
+        }
         ProtocolEntity p = new ProtocolEntity();
         p.setId("ozempic_onboarding_v1");
         p.setDrugId("ozempic");
@@ -106,6 +109,9 @@ public class ProtocolSeeder implements CommandLineRunner {
     }
 
     private void seedInsulin() {
+        if (protocolRepository.existsById("insulin_safety_v1")) {
+            return;
+        }
         ProtocolEntity p = new ProtocolEntity();
         p.setId("insulin_safety_v1");
         p.setDrugId("insulin");
@@ -135,6 +141,9 @@ public class ProtocolSeeder implements CommandLineRunner {
     }
 
     private void seedGeneralDisease() {
+        if (protocolRepository.existsById("disease_info_v1")) {
+            return;
+        }
         ProtocolEntity p = new ProtocolEntity();
         p.setId("disease_info_v1");
         p.setDrugId("general");

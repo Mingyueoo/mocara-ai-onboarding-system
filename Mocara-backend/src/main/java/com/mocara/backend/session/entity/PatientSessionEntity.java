@@ -1,5 +1,6 @@
 package com.mocara.backend.session.entity;
 
+import com.mocara.backend.auth.entity.AppUserEntity;
 import com.mocara.backend.protocol.entity.ProtocolEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -42,6 +43,10 @@ public class PatientSessionEntity {
 
     @Column(name = "start_time_ms", nullable = false)
     private long startTimeMs;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private AppUserEntity user;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SessionResponseEntity> responses = new ArrayList<>();
@@ -103,6 +108,14 @@ public class PatientSessionEntity {
 
     public void setStartTimeMs(long startTimeMs) {
         this.startTimeMs = startTimeMs;
+    }
+
+    public AppUserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(AppUserEntity user) {
+        this.user = user;
     }
 
     public List<SessionResponseEntity> getResponses() {

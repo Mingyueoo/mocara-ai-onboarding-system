@@ -8,8 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.mocara.app.data.auth.TokenManager
+import com.mocara.app.data.remote.RetrofitClient
+import com.mocara.app.di.AppContainer
 import com.mocara.app.navigation.AppNavGraph
+import com.mocara.app.navigation.Screen
 import com.mocara.app.ui.theme.MocaraTheme
+import kotlinx.coroutines.runBlocking
 
 /**
  * MainActivity - App's single Activity
@@ -20,6 +25,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val tokenManager = TokenManager(applicationContext)
+        AppContainer.init(tokenManager)
+        RetrofitClient.init(tokenManager)
+        val hasToken = runBlocking { !tokenManager.getAccessToken().isNullOrBlank() }
 
         setContent {
             MocaraTheme {
@@ -27,7 +36,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppNavGraph()
+                    AppNavGraph(
+                        startDestination = if (hasToken) Screen.Scanner.route else Screen.Login.route
+                    )
                 }
             }
         }
