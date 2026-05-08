@@ -165,6 +165,7 @@ aws --endpoint-url=http://localhost:4566 ecr describe-repositories
 You should see a repository named:
 
 - `mocara-backend`
+- or ecr service is not included within your LocalStack license
 
 List secrets:
 
@@ -233,6 +234,16 @@ Use `-v` only if you want to wipe:
 - LocalStack persisted state
 
 ## 10. Common Issues
+
+### Deployment Issues Encountered:
+
+- Port 8080 Conflict: Resolved by modifying the backend port.
+
+- LocalStack Startup Failure: License issue; resolved by setting the AUTH_TOKEN.
+
+- Spring Boot Startup Failure: Missing database schema; corrected production configuration to Hibernate: ddl-auto: validate and Flyway: enabled: true.
+
+- Missing AWS Credentials: Required setting AWS_ACCESS_KEY_ID=test and AWS_SECRET_ACCESS_KEY=test.
 
 ### Backend fails with JWT secret error
 
