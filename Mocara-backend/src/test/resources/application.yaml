@@ -13,3 +13,11 @@ spring:
   flyway:
     enabled: false
 
+app:
+  security:
+    jwt:
+      issuer: mocara-test
+      secret: test-secret-key-for-tests-only-123456
+      access-token-expiration-seconds: 900
+      refresh-token-expiration-seconds: 1209600
+

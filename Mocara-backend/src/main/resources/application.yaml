@@ -3,9 +3,9 @@ spring:
     name: Mocara-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/mocara
-    username: postgres
-    password: 123456 #
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/mocara}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:

@@ -38,3 +38,18 @@ build/
 # Security ()
 src/main/resources/application-local.yaml
 src/main/resources/application-prod.yaml
+
+# Environment
+.env
+
+# Maven local cache
+.m2/
+
+# IntelliJ
+.idea/
+
+# LocalStack
+localstack/data/
+
+# Logs
+*.log
