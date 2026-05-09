@@ -4,7 +4,7 @@ A full-stack healthcare onboarding system integrating an Android client with a S
 The platform guides patients through structured medication protocols while supporting interactive chat assistance and escalation detection for safety-critical scenarios.
 
 This project demonstrates full-stack system design, combining mobile application architecture, backend API design, database modeling, and domain-driven backend structure.
-![App Demo](docs/screenshots/onboarding_backend.gif)
+![App Demo](../docs/screenshots/onboarding_backend.gif)
 ## System Architecture
 The system consists of two primary components:
 
@@ -363,10 +363,19 @@ Request
   "message": "I feel dizzy after taking this medication"
 }
 ```
+
+## Deployment
+
+- [AWS Architecture Design](docs/AWS_DEPLOYMENT_GUIDE.md) —
+  production-equivalent architecture using ECS Fargate,
+  RDS, Secrets Manager, ALB, and CloudWatch
+- [Local AWS Simulation](docs/LOCALSTACK_DEPLOYMENT_GUIDE.md) —
+  LocalStack-based local development environment
+  simulating ECR and Secrets Manager via Docker Compose
+
 ## Future Improvements
 Potential extensions include:
 - AI-powered medical chat assistant
-- Docker deployment
 - API documentation with OpenAPI / Swagger
 - Event-driven architecture for escalation alerts
 ## Engineering Highlights
@@ -376,3 +385,5 @@ Potential extensions include:
 - Integrated Android client with backend services via Retrofit REST APIs.
 - Built persistence layer using Spring Data JPA with entity-DTO mapping.
 - Implemented database migrations using Flyway for consistent schema management.
+- Implemented a production-oriented JWT authentication system.
+- Validated deployment workflows using LocalStack to simulate AWS infrastructure locally
